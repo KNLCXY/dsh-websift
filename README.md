@@ -59,6 +59,7 @@ sha256sum -c SHA256SUMS.txt
 ## 目录
 
 - [它解决什么问题](#它解决什么问题)
+- [兼容性](#兼容性)
 - [安装](#安装)
 - [30 秒验证](#30-秒验证)
 - [工具参考](#工具参考)
@@ -97,6 +98,37 @@ DSH 自带的 `web_fetch` 是一个 **HTTP 抓取器**：没有 JS 引擎、不�
 脚本换个对话、换个工作区就找不到了。插件是 **profile 级**的：装进 `~/.dsh/profiles/<name>/node_modules`，由 DSH 在启动时组装，**每个会话都带着这些工具**，不依赖你把文件放在哪。
 
 ---
+
+## 兼容性
+
+**在 DSH `0.2.2-rc.1` 上，本插件依旧兼容**（2026-11-08 实测）：契约测试与真宿主功能验证都通过。
+
+| DSH 版本 | 状态 | 验过什么 |
+|---|---|---|
+| `0.2.2-rc.1` | **✔ 兼容** | 真宿主实测 `browser` / `web_find` / `web_digest` + 路由 `/_websift/settings`、`/_websift/clash` 均 200 |
+| `0.2.1-rc.5` | ✔ | dsh-tools 契约测试 6/6 |
+| `0.2.1-rc.4` | ✔ | 同上 |
+| `0.2.1-rc.3` | ✔ | 同上 + 真宿主启动 |
+| `0.2.1-rc.2` | ✔ | 基线 |
+
+「契约测试」= 把本插件的 6 套测试分别指向该版本**真实安装的** `dsh-tools` 跑一遍，锁住 `defineTool` / `parameters` / `output.schema` 这套 API。
+
+> **注意措辞**：是「本插件依旧兼容」，不是「框架没有破坏性变更」。`0.2.2-rc.1` 里 `dsh-tools`
+> **确实换了 7 个导出** —— 那是真的 breaking change，只是打不到本插件。
+
+跨 `0.2.1 → 0.2.2` 这条 minor 线，两个变化值得知道：
+
+- **`dsh-tools` 换了 7 个导出**：`renderToolsSdk*`、`jsonSchemaToPy/Ts`、`TOOL_RUNTIME_SCHEDULER`、`defineContentToolFixture`、`CodeRunFailedError` 消失；`ToolsService`、`projectToolSchema`、`isPlainJson*`、几个 `Tool*Error` 新增。那些是代码生成器与内部调度符号，本插件一个都没用。
+- **cordis `4.0.5 → 4.1.0`**：导出面 26 → 26，零增删，`inject` / `ctx.get` / `ctx.effect` 语义不变。
+
+本插件对这类升级免疫，是因为 `inject = ['tools', 'webServer']` 是**声明式**的 —— cordis 会等服务就绪再跑 `apply()`，不会出现「抢跑导致路由静默没注册」那类竞态。
+
+**未验证**：client 半（设置面板的界面交互）没有开浏览器逐项点过，只验了宿主路由。
+
+> 顺带提醒一个同机的邻坑（不关本插件）：`dsh-ops` 0.5.0 把自带 git 从固定的
+> `@dsh-ops/bash-win32-x64/ucrt64/bin/git.exe` 挪到了 `%TEMP%\dsh-ops-niu-exec-<随机>\winuxcmd\usr\bin\`，
+> 那个固定目录现在是空的。bash 里能用，但**桌面启动的宿主进程拿不到** —— 任何 spawn 裸 git 的插件
+> 都会报「找不到 git」。这是 `dsh-ops` 的布局变更，不是框架问题；本插件不依赖 git，不受影响。
 
 ## 安装
 
