@@ -6,3 +6,7 @@ dist/
 .DS_Store
 Thumbs.db
 lib/_t_*.mjs
+
+# Python 字节码缓存（构建产物，不进仓库）
+__pycache__/
+*.pyc
