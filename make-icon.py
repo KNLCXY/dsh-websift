@@ -1,4 +1,6 @@
 """生成 dsh-websift 的插件图标（256×256 PNG）。"""
+import os
+
 from PIL import Image, ImageDraw
 
 S = 256
@@ -37,5 +39,7 @@ d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=blue, width=6)
 d.line([cx - r + 4, cy, cx + r - 4, cy], fill=blue, width=5)
 d.ellipse([cx - 11, cy - r, cx + 11, cy + r], outline=blue, width=4)
 
-img.save(r"C:\Users\Administrator\Documents\deepseek-harness\default-workspace\plugins\dsh-websift\docs\icon.png", "PNG")
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs", "icon.png")
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
+img.save(OUT, "PNG")
 print("ok", img.size)

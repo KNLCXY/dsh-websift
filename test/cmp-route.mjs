@@ -14,7 +14,7 @@ const LABEL = process.argv[3] || LIB
 const SETTINGS = join(homedir(), '.dsh', 'storages', 'websift', 'settings.json')
 const original = existsSync(SETTINGS) ? readFileSync(SETTINGS, 'utf8') : null
 
-const TOOLS_GUESS = 'C:/Users/Administrator/Desktop/DeepSeek Harness/resources/app.asar/dsh/node_modules/@deepseek-ai/dsh-tools/lib/index.js'
+const TOOLS_GUESS = join(homedir(), 'Desktop', 'DeepSeek Harness', 'resources', 'app.asar', 'dsh', 'node_modules', '@deepseek-ai', 'dsh-tools', 'lib', 'index.js')
 const STUB = "from 'data:text/javascript,export const defineTool = (d) => d'"
 
 // 假代理：接受连接后**什么都不做**（不回响应、不关闭）

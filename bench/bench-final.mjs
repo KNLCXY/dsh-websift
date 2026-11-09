@@ -4,9 +4,9 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const SRC = fileURLToPath(new URL('../lib/index.js', import.meta.url));
-const TOOLS = process.env.DSH_TOOLS || 'C:/Users/Administrator/Desktop/DeepSeek Harness/resources/app.asar/dsh/node_modules/@deepseek-ai/dsh-tools/lib/index.js';
+const TOOLS = process.env.DSH_TOOLS || pathJoin(homedir(), 'Desktop', 'DeepSeek Harness', 'resources', 'app.asar', 'dsh', 'node_modules', '@deepseek-ai', 'dsh-tools', 'lib', 'index.js');
 const TOOLS_IMPORT = existsSync(TOOLS) ? `from '${pathToFileURL(TOOLS).href}'` : "from 'data:text/javascript,export const defineTool = (d) => d'";
-const OUT = 'C:/Users/Administrator/AppData/Local/Temp/bk-final.mjs';
+const OUT = pathJoin(tmpdir(), 'bk-final.mjs');
 writeFileSync(OUT, readFileSync(SRC, 'utf8').replace("from '@deepseek-ai/dsh-tools'", TOOLS_IMPORT), 'utf8');
 writeFileSync(pathJoin(dirname(OUT), 'rank.js'), readFileSync(pathJoin(dirname(SRC), 'rank.js'), 'utf8'), 'utf8');
 const mod = await import(pathToFileURL(OUT).href + '?t=' + Date.now());

@@ -4,10 +4,10 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const SRC = fileURLToPath(new URL('../lib/index.js', import.meta.url));
-const TOOLS = process.env.DSH_TOOLS || 'C:/Users/Administrator/Desktop/DeepSeek Harness/resources/app.asar/dsh/node_modules/@deepseek-ai/dsh-tools/lib/index.js';
+const TOOLS = process.env.DSH_TOOLS || pathJoin(homedir(), 'Desktop', 'DeepSeek Harness', 'resources', 'app.asar', 'dsh', 'node_modules', '@deepseek-ai', 'dsh-tools', 'lib', 'index.js');
 const TOOLS_IMPORT = existsSync(TOOLS) ? `from '${pathToFileURL(TOOLS).href}'` : "from 'data:text/javascript,export const defineTool = (d) => d'";
-const OUT = 'C:/Users/Administrator/AppData/Local/Temp/bk-ab.mjs';
-const CHROME = String.raw`C:\Users\Administrator\Desktop\ocs-2.9.24-setup-win-x64\resources\bin\chrome\chrome\chrome.exe`;
+const OUT = pathJoin(tmpdir(), 'bk-ab.mjs');
+const CHROME = process.env.CHROME_PATH || pathJoin(homedir(), 'Desktop', 'ocs-2.9.24-setup-win-x64', 'resources', 'bin', 'chrome', 'chrome', 'chrome.exe');
 
 writeFileSync(OUT, readFileSync(SRC, 'utf8').replace("from '@deepseek-ai/dsh-tools'", TOOLS_IMPORT), 'utf8');
 writeFileSync(pathJoin(dirname(OUT), 'rank.js'), readFileSync(pathJoin(dirname(SRC), 'rank.js'), 'utf8'), 'utf8');
@@ -19,7 +19,7 @@ const base = 'http://127.0.0.1:9333';
 async function up() { try { const r = await fetch(base + '/json/version', { signal: AbortSignal.timeout(1200) }); return r.ok } catch { return false } }
 if (!(await up())) {
   const { spawn } = await import('node:child_process');
-  spawn(CHROME, ['--headless=new', '--no-sandbox', '--disable-gpu', '--user-data-dir=C:\\Users\\Administrator\\AppData\\Local\\Temp\\ab-profile', '--remote-debugging-port=9333', 'about:blank'], { detached: true, stdio: 'ignore', windowsHide: true }).unref();
+  spawn(CHROME, ['--headless=new', '--no-sandbox', '--disable-gpu', `--user-data-dir=${pathJoin(tmpdir(), 'ab-profile')}`, '--remote-debugging-port=9333', 'about:blank'], { detached: true, stdio: 'ignore', windowsHide: true }).unref();
   for (let i = 0; i < 40 && !(await up()); i++) await new Promise((r) => setTimeout(r, 500));
 }
 function connect(wsUrl) {
@@ -53,7 +53,7 @@ const CASES = [
   {
     name: '东风-41（短）',
     url: 'https://baike.baidu.com/item/%E4%B8%9C%E9%A3%8E-41%E6%B4%B2%E9%99%85%E6%88%98%E7%95%A5%E6%A0%B8%E5%AF%BC%E5%BC%B9/23783870',
-    file: 'C:/Users/Administrator/AppData/Local/Temp/baike-df41.txt',
+    file: pathJoin(tmpdir(), 'baike-df41.txt'),
     query: '东风41 导弹类型 射程 洲际',
     title: '东风-41洲际战略核导弹_百度百科',
     budget: 1500,
@@ -63,7 +63,7 @@ const CASES = [
   {
     name: 'PLC（长）',
     url: 'https://baike.baidu.com/item/%E5%8F%AF%E7%BC%96%E7%A8%8B%E9%80%BB%E8%BE%91%E6%8E%A7%E5%88%B6%E5%99%A8/84414',
-    file: 'C:/Users/Administrator/AppData/Local/Temp/baike-plc.txt',
+    file: pathJoin(tmpdir(), 'baike-plc.txt'),
     query: 'PLC 中文全称 替代 继电器 梯形图',
     title: '可编程逻辑控制器（以微处理器为核心的一种通用工业自动控制装置）_百度百科',
     budget: 2000,

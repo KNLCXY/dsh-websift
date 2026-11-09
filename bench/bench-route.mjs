@@ -2,13 +2,13 @@
 import { dirname, join as pathJoin } from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
 
-const CHROME = String.raw`C:\Users\Administrator\Desktop\ocs-2.9.24-setup-win-x64\resources\bin\chrome\chrome\chrome.exe`;
+const CHROME = process.env.CHROME_PATH || pathJoin(homedir(), 'Desktop', 'ocs-2.9.24-setup-win-x64', 'resources', 'bin', 'chrome', 'chrome', 'chrome.exe');
 const URL_ = 'https://gamebanana.com/search?_sSearchString=yyzj';
 
 async function up(port) { try { const r = await fetch(`http://127.0.0.1:${port}/json/version`, { signal: AbortSignal.timeout(1200) }); return r.ok } catch { return false } }
 async function ensure(port, proxy) {
   if (await up(port)) return;
-  const args = ['--headless=new', '--no-sandbox', '--disable-gpu', `--user-data-dir=C:\\Users\\Administrator\\AppData\\Local\\Temp\\p${port}`, `--remote-debugging-port=${port}`, 'about:blank'];
+  const args = ['--headless=new', '--no-sandbox', '--disable-gpu', `--user-data-dir=${pathJoin(tmpdir(), 'p' + port)}`, `--remote-debugging-port=${port}`, 'about:blank'];
   if (proxy) args.unshift(`--proxy-server=${proxy}`);
   const { spawn } = await import('node:child_process');
   spawn(CHROME, args, { detached: true, stdio: 'ignore', windowsHide: true }).unref();

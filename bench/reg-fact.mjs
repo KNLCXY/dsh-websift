@@ -4,9 +4,9 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const SRC = fileURLToPath(new URL('../lib/index.js', import.meta.url));
-const TOOLS = process.env.DSH_TOOLS || 'C:/Users/Administrator/Desktop/DeepSeek Harness/resources/app.asar/dsh/node_modules/@deepseek-ai/dsh-tools/lib/index.js';
+const TOOLS = process.env.DSH_TOOLS || pathJoin(homedir(), 'Desktop', 'DeepSeek Harness', 'resources', 'app.asar', 'dsh', 'node_modules', '@deepseek-ai', 'dsh-tools', 'lib', 'index.js');
 const TOOLS_IMPORT = existsSync(TOOLS) ? `from '${pathToFileURL(TOOLS).href}'` : "from 'data:text/javascript,export const defineTool = (d) => d'";
-const OUT = 'C:/Users/Administrator/AppData/Local/Temp/bk-reg.mjs';
+const OUT = pathJoin(tmpdir(), 'bk-reg.mjs');
 writeFileSync(OUT, readFileSync(SRC, 'utf8').replace("from '@deepseek-ai/dsh-tools'", TOOLS_IMPORT), 'utf8');
 writeFileSync(pathJoin(dirname(OUT), 'rank.js'), readFileSync(pathJoin(dirname(SRC), 'rank.js'), 'utf8'), 'utf8');
 const mod = await import(pathToFileURL(OUT).href + '?t=' + Date.now());
@@ -15,7 +15,7 @@ const { extractSmart, EXTRACT_POLICY, queryTerms } = mod.__bench;
 const CASES = [
   {
     name: '东风-41',
-    file: 'C:/Users/Administrator/AppData/Local/Temp/baike-df41.txt',
+    file: pathJoin(tmpdir(), 'baike-df41.txt'),
     query: '东风41 导弹类型 射程 洲际',
     title: '东风-41洲际战略核导弹_百度百科',
     budget: 1500,
@@ -25,7 +25,7 @@ const CASES = [
   },
   {
     name: 'PLC',
-    file: 'C:/Users/Administrator/AppData/Local/Temp/baike-plc.txt',
+    file: pathJoin(tmpdir(), 'baike-plc.txt'),
     query: 'PLC 中文全称 替代 继电器 梯形图',
     title: '可编程逻辑控制器（以微处理器为核心的一种通用工业自动控制装置）_百度百科',
     budget: 2000,
