@@ -123,12 +123,12 @@ DSH 自带的 `web_fetch` 是一个 **HTTP 抓取器**：没有 JS 引擎、不�
 
 本插件对这类升级免疫，是因为 `inject = ['tools', 'webServer']` 是**声明式**的 —— cordis 会等服务就绪再跑 `apply()`，不会出现「抢跑导致路由静默没注册」那类竞态。
 
-**未验证**：client 半（设置面板的界面交互）没有开浏览器逐项点过，只验了宿主路由。
+**client 半（界面）也验过**：在 `0.2.2-rc.1` 上起真宿主后，`window.__DSH_BOOT__` 里注册了
+`dsh-websift/client.js`（`entries` 与 `batches` 两处都有），页面渲染出输入框右上角的三档控件
+`🌐 浏览器 关 / 按需 / 强制`。
 
-> 顺带提醒一个同机的邻坑（不关本插件）：`dsh-ops` 0.5.0 把自带 git 从固定的
-> `@dsh-ops/bash-win32-x64/ucrt64/bin/git.exe` 挪到了 `%TEMP%\dsh-ops-niu-exec-<随机>\winuxcmd\usr\bin\`，
-> 那个固定目录现在是空的。bash 里能用，但**桌面启动的宿主进程拿不到** —— 任何 spawn 裸 git 的插件
-> 都会报「找不到 git」。这是 `dsh-ops` 的布局变更，不是框架问题；本插件不依赖 git，不受影响。
+> 验到的是「模块已加载 + 控件已渲染」。逐个按钮的交互没有一一点过。
+
 
 ## 安装
 
